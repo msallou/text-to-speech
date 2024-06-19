@@ -1,0 +1,62 @@
+{% extends 'navbar.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <title>The Communicator</title>
+</head>
+{% block content %}
+<body class="body">
+    <div class="content">
+        <h1 id="banner">Speech To Text</h1>
+
+        <div class="convert_text">
+            <h1>Convert MP3</h1>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" id="file" name="filename" accept=".mp3, .wav, .aac, ">
+                <button type="submit">Convert to text</button>
+            </form>
+        </div>
+
+        <div class="convert_text">
+            {% if transcript %}
+                <h2>Transcript:</h2>
+                <div class="transcript">
+                    <p id="transcript"></p>
+                </div>
+            {% elif error %}
+                <div class="error">
+                    <p>{{ error }}</p>
+                </div>
+            {% else %}
+                <div id="no_text_yet">
+                    <h1>You have not converted any mp3s yet</h1>
+                    <h2>Use the above "Convert MP3" feature to convert some text</h2>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        const transcript_text = document.getElementById('transcript')
+        var transcript = "{{ transcript }}"
+
+        var wordsList = transcript.split(' ')
+        const printed_list = []
+
+        // Assign an index for each word
+        var currentIndex = 0
+        setInterval(() => {
+            printed_list.push(wordsList[currentIndex])
+            transcript_text.textContent = printed_list.join(' ')
+            currentIndex++
+        }, 60)
+
+    </script>
+</body>
+{% endblock %}
+</html>

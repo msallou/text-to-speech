@@ -1,0 +1,91 @@
+{% extends 'navbar.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <title>The Communicator</title>
+</head>
+<body class="body">
+    <div class="content">
+        
+        <h1 id="banner">Text To Speech</h1>
+        <a href="{% url 'open_file_explorer' %}"><button id="openMP3">View saved MP3 files</button></a>
+
+        <div class="convert_text">
+            <h1>Convert Text</h1>
+            <form method="post" onsubmit="submitText(this)" id="text_form">
+                {% csrf_token %}
+                <textarea type="text" name="text_to_convert" id="text_input"></textarea>
+                <button type="submit" style="visibility: hidden;" id="convertBtn_0">Convert to audio</button>
+                <input type="hidden" id="fileName_0" name="fileName">
+            </form>
+            <button onclick="enterFileName(0)" id="enterFileName_0" style="margin-top: -2vh;">Enter file name <h5 style="margin: 0; margin-top: 1vh;">(To convert)</h5></button>
+        </div>
+        
+        <div class="convert_text">
+            <h1>Convert previous texts</h1>
+            {% if previous_texts %}
+                <table>
+                    <th>Date & Time</th>
+                    <th>Text</th>
+                    <th class="convert_btn_column"></th>
+                    <th class="convert_btn_column"></th>
+                    {% for text in previous_texts %}
+                        <tr>
+                            <td id="date_column">{{ text.date }}</td>
+                            <td>{{ text.text }}</td>
+                            <td class="convert_btn_column">
+                                <form method="post" onsubmit="submitText(this)" class="text_form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="text_to_convert" value="{{ text.text }}">
+                                    <input type="hidden" id="fileName_{{ forloop.counter }}" name="fileName">
+                                    <button type="submit" style="visibility: hidden; position: absolute; margin-left: -5.4vw; margin-top: 3.5vh;" id="convertBtn_{{ forloop.counter }}">Convert to audio</button>
+                                </form>
+                                <button onclick="enterFileName('{{ forloop.counter }}')" id="enterFileName_{{ forloop.counter }}">Enter file name <h5 style="margin: 0; margin-top: 1vh;">(To convert)</h5></button>
+                            </td>
+                            <td class="convert_btn_column">
+                                <form method="POST" action="{% url 'delete_converted_text' text.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <div id="no_text_yet">
+                    <h1>You have not converted any text yet</h1>
+                    <h2>Use the above "Convert Text" feature to convert some text</h2>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        function submitText(form) {
+            form.submit()
+            const input_field = document.getElementById('text_input')
+        }        
+        function enterFileName(index) {
+            const fileNameField = document.getElementById(`fileName_${index}`)
+            const enterFileName = document.getElementById(`enterFileName_${index}`)
+            const convertBtn = document.getElementById(`convertBtn_${index}`)
+            const file_name = window.prompt('Please enter file name (mp3 will be automatically added): ')
+            if (file_name) {
+                fileNameField.value = file_name
+                convertBtn.style.visibility = 'visible'
+                enterFileName.style.visibility = 'hidden'
+            }
+        }
+        document.getElementById('openMP3').addEventListener('click', function() {
+
+        })
+    </script>
+</body>
+{% endblock %}
+
+</html>

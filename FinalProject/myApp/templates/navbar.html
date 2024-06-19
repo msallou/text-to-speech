@@ -1,0 +1,27 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <link rel="icon" href="{% static 'images/speech_bubble.png' %}">
+    <title>The Communicator</title>
+</head>
+<body>
+    <nav>
+        <ul>
+            <div class="navbar_links">
+                <a href="{% url 'text-to-speech' %}" class="links">Text to Speech</a>
+                <li>|</li>
+                <a href="{% url 'speech-to-text' %}" class="links">Speech to Text</a>
+            </div>
+        </ul>
+    </nav>
+    <div>
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>
